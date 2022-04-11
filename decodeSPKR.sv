@@ -98,6 +98,7 @@ module decodeSPKR (input logic [3:0] num,
 /////////////////////////////////////////////////////////
 /////////////////RANDOM TUNE GENERATOR///////////////////
 /////////////////////////////////////////////////////////
+				/*
 				if(num == 11) begin
 					flag <= 'd1;
 				end
@@ -121,7 +122,7 @@ module decodeSPKR (input logic [3:0] num,
 					endcase
 					
 				i <= $size(notes);
-				
+				*/
 				/*
 				else if(flag) begin
 				
