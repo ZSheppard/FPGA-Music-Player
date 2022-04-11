@@ -9,13 +9,12 @@ module labproject ( output logic [3:0] kpc,  // column select, active-low
 				  output logic spkr, rst,
 				  output logic [3:0] num_rand, //where the random number is set and outputted to kpdecode
 				  input logic [1:0] digit,
-				  
               input logic  reset_n, FPGA_CLK1_50,
 				  input logic [(14 - 1):0] seed) ;
 
-   logic clk ;                  		
-   logic kphit ;                  	// a key is pressed
+   logic clk, play, kphit,d,rstn;                  		
 	logic [3:0] num;
+	logic [3:0] randNum;
 	logic [1:0] random_num;		//where the random number is initially stored
 	reg [(14 - 1):0]out;			//variable holding random number using LFSR
 	logic [31:0] desiredFrequency; 	// desired note frequency (e.g C = 261Hz, A = 440Hz etc.)
@@ -31,13 +30,17 @@ module labproject ( output logic [3:0] kpc,  // column select, active-low
 	kpdecode kpdecode_0 (.*);
 	decode2 decode2_0 (.*);
 	decode7 decode7_0 (.*);
-	lfsr lfsr_0 (.*);
+	//lfsr lfsr_0 (.*);
+	//playLatch playLatch_0 (.*);
+	//tonegen tonegen_0 (.*);
+	randNumberGenerator randNumberGenerator_0 (.*);
 	decodeSPKR decodeSPKR_0 (.*);
 	MusicBox MusicBox_0 (.*);
 	
 	enum {menu,init,display} state = menu, statenext;
 	
 	always_ff @(posedge FPGA_CLK1_50) begin
+		
 		/*
 		state <= statenext;
 		
