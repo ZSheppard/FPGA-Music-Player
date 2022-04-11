@@ -1,4 +1,6 @@
 // decodeSPKR.sv - converts # bit number into the signals necessary to output desired tone on speaker of DEO-Nano-SoC
+//Has a hardcoded full length song
+//
 // ELEX 7660 Group Project
 
 module decodeSPKR (input logic [3:0] num, 
@@ -9,8 +11,12 @@ module decodeSPKR (input logic [3:0] num,
 						 
 					logic flag,flag2;
 					reg[31:0] count2 = 0;
+					
 					int notes[15:0] = '{415,392,370,349,330,311,294,277,261,466,277,349,330,349,294,466};
 					int notelength[15:0] = '{1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,0};
+					
+					//SeaShanty song
+					
 					int seaShanty[304:0] = '{880,659,587,554,0,554,587,659,739,830,659,
 												   0,739,659,587,554,554,494,554,587,
 													0,880,659,587,554,0,554,587,659,739,587,0,
@@ -79,12 +85,14 @@ module decodeSPKR (input logic [3:0] num,
 															1,1,1,2,2,1,1,1,1,1,2,1,
 															1,1,1,1,1,1,1,1,1,1,1,2,2};
 															
+															
 					shortint i;
 
   always_ff @(posedge FPGA_CLK1_50)
 			begin
-			
-			//RANDOM TUNE GENERATOR
+/////////////////////////////////////////////////////////
+/////////////////RANDOM TUNE GENERATOR///////////////////
+/////////////////////////////////////////////////////////
 				if(num == 11) begin
 					flag <= 'd1;
 				end
@@ -106,8 +114,9 @@ module decodeSPKR (input logic [3:0] num,
 						end
 					
 					end
-				
-				//SEASHANTY (press button 12 (LOCK))
+/////////////////////////////////////////////////////////
+/////////////SEASHANTY (press button 12 (LOCK))//////////
+/////////////////////////////////////////////////////////
 					else if(num == 12) begin
 						flag2 <= 'd1;
 					end
@@ -129,7 +138,9 @@ module decodeSPKR (input logic [3:0] num,
 							end
 						
 					end
-				//KEYBOARD FREEMODE	
+/////////////////////////////////////////////////////////
+//////////////////KEYBOARD FREEMODE//////////////////////
+/////////////////////////////////////////////////////////		
 				else begin
 				
 				
