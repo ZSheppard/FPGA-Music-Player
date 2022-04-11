@@ -10,10 +10,14 @@ module decodeSPKR (input logic [3:0] num,
 						 output logic play,d,rstn);
 						 
 					logic flag,flag2;
+					reg[31:0] count1 = 0;
 					reg[31:0] count2 = 0;
+					logic [31:0] tuneFrequency;
 					
-					int notes[15:0] = '{415,392,370,349,330,311,294,277,261,466,277,349,330,349,294,466};
-					int notelength[15:0] = '{1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,0};
+					//int notes[15:0] = '{415,392,370,349,330,311,294,277,261,466,277,349,330,349,294,466};
+					//int notelength[15:0] = '{1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,0};
+					int notes[7:0];
+					int notelength[7:0] = '{4,4,4,4,4,4,4,4};
 					
 					//SeaShanty song
 					
@@ -86,7 +90,8 @@ module decodeSPKR (input logic [3:0] num,
 															1,1,1,1,1,1,1,1,1,1,1,2,2};
 															
 															
-					shortint i;
+					shortint i;	//for random tune size
+					shortint j;	//for seaShanty size
 
   always_ff @(posedge FPGA_CLK1_50)
 			begin
@@ -98,14 +103,35 @@ module decodeSPKR (input logic [3:0] num,
 				end
 				
 				else if(flag) begin
+					
+					case(randNum)
+						0 : begin  tuneFrequency <= 'd466; d = 'd0; end //A#
+						1 : begin  tuneFrequency <= 'd261; d = 'd0; end //C
+						2 : begin  tuneFrequency <= 'd277; d = 'd0; end //C#
+						3 : begin  tuneFrequency <= 'd294; d = 'd0; end //D
+					   4 : begin  tuneFrequency <= 'd311; d = 'd0; end //D#
+						5 : begin  tuneFrequency <= 'd330; d = 'd0; end //E
+					   6 : begin  tuneFrequency <= 'd349; d = 'd0; end //F
+						7 : begin  tuneFrequency <= 'd370; d = 'd0; end //F#
+					   8 : begin  tuneFrequency <= 'd392; d = 'd0; end //G
+					   9 : begin  tuneFrequency <= 'd415; d = 'd0; end //G#
+					   14 : begin tuneFrequency <= 'd440; d = 'd0; end //A
+					   15 : begin tuneFrequency <= 'd494; d = 'd0; end //B
+						default: begin tuneFrequency <= 'd466; d = 'd0; end
+					endcase
+					
+				i <= $size(notes);
 				
-						if(count2 <= 10000000*notelength[i])begin
+				/*
+				else if(flag) begin
+				
+						if(count1 <= 10000000*notelength[i])begin
 							desiredFrequency <= notes[i];
-							count2++;
+							count1++;
 						end
 					
 						else begin
-							count2 <= 0;
+							count1 <= 0;
 							i--;
 							if(i < 0) begin
 								flag <= 0;
@@ -114,43 +140,43 @@ module decodeSPKR (input logic [3:0] num,
 						end
 					
 					end
+					*/
 /////////////////////////////////////////////////////////
 /////////////SEASHANTY (press button 12 (LOCK))//////////
 /////////////////////////////////////////////////////////
-					else if(num == 12) begin
+				
+				if(num == 12) begin
 						flag2 <= 'd1;
 					end
 					
 					else if(flag2) begin
 					
-							if(count2 <= 10000000*seaShantylength[i])begin
-								desiredFrequency <= seaShanty[i];
+							if(count2 <= 10000000*seaShantylength[j])begin
+								desiredFrequency <= seaShanty[j];
 								count2++;
 							end
 						
 							else begin
 								count2 <= 0;
-								i--;
-								if(i < 0) begin
+								j--;
+								if(j < 0) begin
 									flag2 <= 0;
-									i <= $size(seaShanty);
+									j <= $size(seaShanty);
 									end
 							end
 						
 					end
+					
 /////////////////////////////////////////////////////////
 //////////////////KEYBOARD FREEMODE//////////////////////
 /////////////////////////////////////////////////////////		
 				else begin
 				
-				
+					
 					case(num)	//cases for the input 'num'
-						 //values 0-9 represent notes
+						 //values 0-9,14,15 represent notes
 						 0 : begin  desiredFrequency <= 'd466; d = 'd0; end //A#
-						 
-						 //tune for middle C - 261Hz.
-						 1 : begin  desiredFrequency <= 'd261; d = 'd0; end	//C
-						 
+						 1 : begin  desiredFrequency <= 'd261; d = 'd0; end //C
 						 2 : begin 	desiredFrequency <= 'd277; d = 'd0; end //C#
 						 3 : begin 	desiredFrequency <= 'd294; d = 'd0; end //D
 						 4 : begin 	desiredFrequency <= 'd311; d = 'd0; end //D#
@@ -164,20 +190,10 @@ module decodeSPKR (input logic [3:0] num,
 						 
 						 //values 10-13 represent game operations
 						 10 : begin	desiredFrequency <= 'd0; d <= 'd0; end
-						 
 						 //11 : begin desiredFrequency <= 'dffff; flag <= 'd1;
-								
-								//d <= 'd1; 
-								//rstn <= 'd1; 
-							//sets play to one, starting tonegen.sv 
-										
 						 12 : begin	desiredFrequency <= 'd0; d = 'd0; end
-						 13 : begin	desiredFrequency <= 'd0; d = 'd0; end
-						 //18 : begin desiredFrequency = 'd0; end
-						 
-						 default: begin
-											 desiredFrequency <= 'd0; d = 'd0;	//default goes to zero yet, constant tone
-									end
+						 13 : begin	desiredFrequency <= 'd0; d = 'd0; end					 
+						 default: begin desiredFrequency <= 'd0; d = 'd0; end //default goes to zero yet, constant tone		
 					endcase
 				end
 			end
