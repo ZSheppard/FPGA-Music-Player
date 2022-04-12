@@ -4,16 +4,19 @@
 // ELEX 7660 Group Project
 
 module decodeSPKR (input logic [3:0] num, 
-						 input logic FPGA_CLK1_50,
+						 input logic FPGA_CLK1_50,start,
 						 input logic [3:0] randNum,
-						 output logic [31:0] desiredFrequency,
-						 output logic play,d,rstn);
+						 input logic [11:0] rand_stored,
+						 input logic [31:0] rand_send0_Frequency,
+												  rand_send1_Frequency,
+												  rand_send2_Frequency,
+												  rand_send3_Frequency,
+						 output logic [31:0] desiredFrequency);
 						 
 					logic flag,flag2;
 					reg[31:0] count1 = 0;
 					reg[31:0] count2 = 0;
-					logic [31:0] tuneFrequency;
-					
+
 					//int notes[15:0] = '{415,392,370,349,330,311,294,277,261,466,277,349,330,349,294,466};
 					//int notelength[15:0] = '{1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,0};
 					int notes[7:0];
@@ -90,7 +93,7 @@ module decodeSPKR (input logic [3:0] num,
 															1,1,1,1,1,1,1,1,1,1,1,2,2};
 															
 															
-					shortint i;	//for random tune size
+					shortint i = $size(notes);	//for random tune size
 					shortint j;	//for seaShanty size
 
   always_ff @(posedge FPGA_CLK1_50)
@@ -98,50 +101,35 @@ module decodeSPKR (input logic [3:0] num,
 /////////////////////////////////////////////////////////
 /////////////////RANDOM TUNE GENERATOR///////////////////
 /////////////////////////////////////////////////////////
-				/*
-				if(num == 11) begin
+			
+				if(start == 1) begin
 					flag <= 'd1;
 				end
 				
-				else if(flag) begin
-					
-					case(randNum)
-						0 : begin  tuneFrequency <= 'd466; d = 'd0; end //A#
-						1 : begin  tuneFrequency <= 'd261; d = 'd0; end //C
-						2 : begin  tuneFrequency <= 'd277; d = 'd0; end //C#
-						3 : begin  tuneFrequency <= 'd294; d = 'd0; end //D
-					   4 : begin  tuneFrequency <= 'd311; d = 'd0; end //D#
-						5 : begin  tuneFrequency <= 'd330; d = 'd0; end //E
-					   6 : begin  tuneFrequency <= 'd349; d = 'd0; end //F
-						7 : begin  tuneFrequency <= 'd370; d = 'd0; end //F#
-					   8 : begin  tuneFrequency <= 'd392; d = 'd0; end //G
-					   9 : begin  tuneFrequency <= 'd415; d = 'd0; end //G#
-					   14 : begin tuneFrequency <= 'd440; d = 'd0; end //A
-					   15 : begin tuneFrequency <= 'd494; d = 'd0; end //B
-						default: begin tuneFrequency <= 'd466; d = 'd0; end
-					endcase
-					
-				i <= $size(notes);
-				*/
-				/*
-				else if(flag) begin
 				
-						if(count1 <= 10000000*notelength[i])begin
-							desiredFrequency <= notes[i];
-							count1++;
-						end
+				if(flag) begin
+				
+					//The decoded Frequencies are placed in the notes array
+					notes[7:0] = '{rand_send0_Frequency,0,rand_send1_Frequency,0,rand_send2_Frequency,0,rand_send3_Frequency,0};
+					//parameter i is set to the size of the notes array
 					
-						else begin
+					if(count1 <= 10000000*notelength[i])begin
+						desiredFrequency <= notes[i];
+						count1++;
+					end
+						
+					else begin
 							count1 <= 0;
 							i--;
-							if(i < 0) begin
-								flag <= 0;
-								i <= $size(notes);
-								end
+						if(i < 0) begin
+							flag <= 0;
+							i <= $size(notes);
 						end
-					
 					end
-					*/
+						
+				end
+				
+					
 /////////////////////////////////////////////////////////
 /////////////SEASHANTY (press button 12 (LOCK))//////////
 /////////////////////////////////////////////////////////
@@ -176,25 +164,25 @@ module decodeSPKR (input logic [3:0] num,
 					
 					case(num)	//cases for the input 'num'
 						 //values 0-9,14,15 represent notes
-						 0 : begin  desiredFrequency <= 'd466; d = 'd0; end //A#
-						 1 : begin  desiredFrequency <= 'd261; d = 'd0; end //C
-						 2 : begin 	desiredFrequency <= 'd277; d = 'd0; end //C#
-						 3 : begin 	desiredFrequency <= 'd294; d = 'd0; end //D
-						 4 : begin 	desiredFrequency <= 'd311; d = 'd0; end //D#
-						 5 : begin 	desiredFrequency <= 'd330; d = 'd0; end //E
-						 6 : begin 	desiredFrequency <= 'd349; d = 'd0; end //F
-						 7 : begin	desiredFrequency <= 'd370; d = 'd0; end //F#
-						 8 : begin	desiredFrequency <= 'd392; d = 'd0; end //G
-						 9 : begin	desiredFrequency <= 'd415; d = 'd0; end //G#
-						 14 : begin	desiredFrequency <= 'd440; d = 'd0; end //A
-						 15 : begin	desiredFrequency <= 'd494; d = 'd0; end //B
+						 0 : begin  desiredFrequency <= 'd466; end //A#
+						 1 : begin  desiredFrequency <= 'd261; end //C
+						 2 : begin 	desiredFrequency <= 'd277; end //C#
+						 3 : begin 	desiredFrequency <= 'd294; end //D
+						 4 : begin 	desiredFrequency <= 'd311; end //D#
+						 5 : begin 	desiredFrequency <= 'd330; end //E
+						 6 : begin 	desiredFrequency <= 'd349; end //F
+						 7 : begin	desiredFrequency <= 'd370; end //F#
+						 8 : begin	desiredFrequency <= 'd392; end //G
+						 9 : begin	desiredFrequency <= 'd415; end //G#
+						 14 : begin	desiredFrequency <= 'd440; end //A
+						 15 : begin	desiredFrequency <= 'd494; end //B
 						 
 						 //values 10-13 represent game operations
-						 10 : begin	desiredFrequency <= 'd0; d <= 'd0; end
+						 10 : begin	desiredFrequency <= 'd0; end
 						 //11 : begin desiredFrequency <= 'dffff; flag <= 'd1;
-						 12 : begin	desiredFrequency <= 'd0; d = 'd0; end
-						 13 : begin	desiredFrequency <= 'd0; d = 'd0; end					 
-						 default: begin desiredFrequency <= 'd0; d = 'd0; end //default goes to zero yet, constant tone		
+						 12 : begin	desiredFrequency <= 'd0; end
+						 13 : begin	desiredFrequency <= 'd0; end					 
+						 default: begin desiredFrequency <= 'd0; end //default goes to zero yet, constant tone		
 					endcase
 				end
 			end
