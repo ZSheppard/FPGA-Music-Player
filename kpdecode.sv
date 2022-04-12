@@ -1,6 +1,10 @@
+//Keypad decode module
+//reads inputs from keypad row and keypad columm and cocatenates them into "button"
+//button is used to determine a value to set num
+// ELEX 7660 Group Project
+
 module kpdecode ( output logic [3:0] num,
 						output logic kphit,
-						input logic [3:0] num_rand,
 						input logic  [3:0] kpc,
 						input logic  [3:0] kpr);
 		
@@ -33,16 +37,7 @@ module kpdecode ( output logic [3:0] num,
 							default: begin num = 13; kphit = 0; end
 							
 						endcase
-						
-						/*
-						case(num_rand)
-								0: begin num = 4'h0; kphit = 1; end
-								1: begin num = 4'h1; kphit = 1; end
-								2: begin num = 4'h2; kphit = 1; end
-								3: begin num = 4'h3; kphit = 1; end
-								default: begin num = 13; kphit = 0; end
-						endcase
-						*/
+
 					end
 				
 			
